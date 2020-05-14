@@ -1,0 +1,12 @@
+name: .penguin
+
+readme:
+  template: chart
+  update: true
+  sections:
+    - title: What is this?
+      body: |
+        This is a helm chart
+    - title: Why it exists?
+      body: |
+        Details about the meaning of life go here :)
