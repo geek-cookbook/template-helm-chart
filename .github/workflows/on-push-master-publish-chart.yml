@@ -6,10 +6,26 @@ on:
       - master
     paths:
       - 'charts/**'
-      - '.github/**'         
+      - '.github/**'   
+  watch:
+    types: [started]            
 
 jobs:
-  build:
+  # Since we're allowing the workflow to be triggered with a star, only trigger if a collaborator performed
+  # the action which triggered us (https://stackoverflow.com/questions/58933155/manual-workflow-triggers-in-github-actions/58965362#58965362)
+  i-can-haz-access:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: octokit/request-action@v2.0.0
+      with:
+        route: GET /repos/:repository/collaborators/${{ github.actor }}
+        repository: ${{ github.repository }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish:
+    needs: [i-can-haz-access] # Don't proceed unless authorize step above passed
 
     runs-on: ubuntu-latest
 
@@ -43,3 +59,15 @@ jobs:
         repo: charts
         owner: geek-cookbook
         event_type: chart_update
+
+    # # And because I'm likely to ignore email...
+    # - name: notify-slack-of-failure
+    #   uses: rtCamp/action-slack-notify@v2.0.0
+    #   env:
+    #     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+    #     SLACK_COLOR: 'red'
+    #     SLACK_ICON: https://github.com/rtCamp.png?size=48
+    #     SLACK_MESSAGE: ':face_palm: Deploy failed :('
+    #     SLACK_TITLE: CI failed
+    #     SLACK_USERNAME: GH Actions
+    #   if: failure()        
