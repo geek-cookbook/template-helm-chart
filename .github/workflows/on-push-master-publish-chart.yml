@@ -24,7 +24,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  publish:
+  ci/publish-chart:
     needs: [i-can-haz-access] # Don't proceed unless authorize step above passed
 
     runs-on: ubuntu-latest
