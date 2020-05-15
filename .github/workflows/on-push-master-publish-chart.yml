@@ -13,7 +13,7 @@ on:
 jobs:
   # Since we're allowing the workflow to be triggered with a star, only trigger if a collaborator performed
   # the action which triggered us (https://stackoverflow.com/questions/58933155/manual-workflow-triggers-in-github-actions/58965362#58965362)
-  ci/i-can-haz-access:
+  i-can-haz-access:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,7 +24,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  ci/publish-chart:
+  cr-publish-chart:
     needs: [ci/i-can-haz-access] # Don't proceed unless authorize step above passed
 
     runs-on: ubuntu-latest
