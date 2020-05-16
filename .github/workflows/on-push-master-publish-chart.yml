@@ -25,7 +25,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   cr-publish-chart:
-    needs: [ci/i-can-haz-access] # Don't proceed unless authorize step above passed
+    needs: [i-can-haz-access] # Don't proceed unless authorize step above passed
 
     runs-on: ubuntu-latest
 
