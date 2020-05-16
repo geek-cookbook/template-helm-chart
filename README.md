@@ -8,7 +8,9 @@
 [twitterurl]: https://twitter.com/funkypenguin
 [dockerurl]: https://geek-cookbook.funkypenguin.co.nz/ha-docker-swarm/design
 [k8surl]: https://geek-cookbook.funkypenguin.co.nz/kubernetes/start
+
 <div align="center">
+
 [![geek-cookbook](https://raw.githubusercontent.com/geek-cookbook/autopenguin/master/images/readme_header.png)][cookbookurl]
 [![Discord](https://img.shields.io/discord/396055506072109067?color=black&label=Hot%20Sweaty%20Geeks&logo=discord&logoColor=white&style=for-the-badge)][discordurl]
 [![Forums](https://img.shields.io/discourse/topics?color=black&label=Forums&logo=discourse&logoColor=white&server=https%3A%2F%2Fdiscourse.geek-kitchen.funkypenguin.co.nz&style=for-the-badge)][discourseurl]
@@ -24,6 +26,15 @@
 
 1. [What is this?](#what-is-this)
 2. [Why it exists?](#why-it-exists)
+
+
+# Why should I use this chart?
+
+For one thing, it's known to be syntactically correct, thanks to the wonders of CI:
+
+![Linting](https://github.com/geek-cookbook/.penguin/workflows/Linting/badge.svg)
+![Testing](https://github.com/geek-cookbook/.penguin/workflows/Testing/badge.svg)
+
 
  
 # How to use it?
