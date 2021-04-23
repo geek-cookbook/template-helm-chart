@@ -4,70 +4,35 @@ on:
   push:
     branches:
       - master
+      - main # assume that the branch name may change in future
     paths:
       - 'charts/**'
-      - '.github/**'   
-  watch:
-    types: [started]            
+      - '.github/**'
+  workflow_dispatch:
 
 jobs:
-  # Since we're allowing the workflow to be triggered with a star, only trigger if a collaborator performed
-  # the action which triggered us (https://stackoverflow.com/questions/58933155/manual-workflow-triggers-in-github-actions/58965362#58965362)
-  i-can-haz-access:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: octokit/request-action@v2.0.0
-      with:
-        route: GET /repos/:repository/collaborators/${{ github.actor }}
-        repository: ${{ github.repository }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  cr-publish-chart:
-    needs: [i-can-haz-access] # Don't proceed unless authorize step above passed
+  publish-chart:
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
-    - name: Fetch history
-      run: git fetch --prune --unshallow
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-    - name: Configure Git
-      run: |
-        git config user.name "$GITHUB_ACTOR"
-        git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+      # We need cert-manager already installed in the cluster because we assume the CRDs exist
+      - name: Add haproxy repo
+        run: |
+          helm repo add haprox https://haproxytech.github.io/helm-charts --force-update
 
-    # See https://github.com/helm/chart-releaser-action/issues/6
-    - name: Install Helm
-      run: |
-        curl -fsSLo get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-        chmod 700 get_helm.sh
-        ./get_helm.sh
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.2.0
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
-    - name: Run chart-releaser
-      uses: helm/chart-releaser-action@v1.0.0-rc.2
-      env:
-        CR_TOKEN: "${{ secrets.CR_TOKEN }}"
-
-    - name: Emit repository_dispatch
-      uses: mvasigh/dispatch-action@master
-      with:
-        token: ${{ secrets.CR_TOKEN }}
-        repo: charts
-        owner: geek-cookbook
-        event_type: chart_update
-
-    # # And because I'm likely to ignore email...
-    # - name: notify-slack-of-failure
-    #   uses: rtCamp/action-slack-notify@v2.0.0
-    #   env:
-    #     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-    #     SLACK_COLOR: 'red'
-    #     SLACK_ICON: https://github.com/rtCamp.png?size=48
-    #     SLACK_MESSAGE: ':face_palm: Deploy failed :('
-    #     SLACK_TITLE: CI failed
-    #     SLACK_USERNAME: GH Actions
-    #   if: failure()        
